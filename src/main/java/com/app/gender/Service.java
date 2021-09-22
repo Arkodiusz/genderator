@@ -13,6 +13,15 @@ public class Service {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
+    private static Service service;
+
+    public static Service getInstance() {
+        if (service == null) {
+            service = new Service();
+        }
+        return service;
+    }
+
     public String detect(String name) {
         LOGGER.info("detecting gender..");
         WebClient.RequestHeadersSpec<?> spec = WebClient.create().
@@ -31,6 +40,17 @@ public class Service {
                 toEntityList(TokenDto.class).block().getBody();
         LOGGER.info("..received {} items.", tokens.size());
         return tokens;
+    }
+
+    public void save(TokenDto tokenDto) {
+        System.out.println();
+    }
+    public void delete(Long id) {
 
     }
+
+    public void update(TokenDto tokenDto) {
+
+    }
+
 }
