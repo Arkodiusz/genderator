@@ -32,14 +32,15 @@ public class Service {
         return service;
     }
 
-    public String detect(String name) {
+    public ResponseDto detect(String name, int variant) {
         LOGGER.info("detecting gender..");
         WebClient.RequestHeadersSpec<?> spec = WebClient.create().
-                get().uri(URL + "gender/" + name);
-        String designation = spec.retrieve().
-                toEntity(String.class).block().getBody();
-        LOGGER.info("..received item: ", designation);
-        return designation;
+                get().uri(URL + "gender/" + name + "/?variant=" + variant);
+        ResponseDto responseDto = spec.retrieve().
+                toEntity(ResponseDto.class).block().getBody();
+        LOGGER.info("..response [{} , m:{}, f:{}, i:{}, %:{}]",
+        responseDto.getDesignation(), responseDto.getMale(), responseDto.getFemale(), responseDto.getInconclusive(), responseDto.getPercentage());
+        return responseDto;
     }
 
     public List<TokenDto> listTokens(String gender) {
@@ -59,7 +60,6 @@ public class Service {
         call(URL + "tokens", jsonInputString, "POST");
         LOGGER.info("..token saved.");
     }
-
 
     public void delete(Long id) {
         LOGGER.info("deleting token..");

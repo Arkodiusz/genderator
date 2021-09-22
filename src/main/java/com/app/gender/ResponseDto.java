@@ -5,16 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
-public class Gender {
-
-    @JsonProperty("name")
-    private String designation;
-
+public class ResponseDto {
+    @JsonProperty private String designation;
+    @JsonProperty private int male;
+    @JsonProperty private int female;
+    @JsonProperty private int inconclusive;
+    @JsonProperty private double percentage;
 }
