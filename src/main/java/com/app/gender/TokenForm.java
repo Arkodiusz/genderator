@@ -8,14 +8,6 @@ import com.vaadin.flow.data.binder.Binder;
 
 import java.io.IOException;
 
-        import com.vaadin.flow.component.Text;
-        import com.vaadin.flow.component.button.Button;
-        import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-        import com.vaadin.flow.component.textfield.TextField;
-        import com.vaadin.flow.data.binder.Binder;
-
-        import java.io.IOException;
-
 public class TokenForm extends VerticalLayout {
 
     private Binder<TokenDto> binder = new Binder<>(TokenDto.class);
@@ -27,7 +19,7 @@ public class TokenForm extends VerticalLayout {
     private Text title = new Text("CREATE NEW ROCK");
 
     private TextField name = new TextField("Name");
-    private TextField region = new TextField("Region");
+    private TextField gender = new TextField("Gender");
 
     private Button save = new Button("Save");
 
@@ -58,7 +50,7 @@ public class TokenForm extends VerticalLayout {
             delete();
         });
 
-        add(title, name, region, save, update, delete);
+        add(title, name, gender, save, update, delete);
 
         binder.bindInstanceFields(this);
     }
@@ -101,6 +93,6 @@ public class TokenForm extends VerticalLayout {
                 default: break;
             }
         }
-        //setVisible(false);
+        setVisible(false);
     }
 }

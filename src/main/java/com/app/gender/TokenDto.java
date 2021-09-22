@@ -15,6 +15,5 @@ import lombok.Setter;
 public class TokenDto {
     @JsonProperty private Long id;
     @JsonProperty private String name;
-    @JsonProperty private char gender;
-    @JsonProperty private String nation;
+    @JsonProperty private String gender;
 }
