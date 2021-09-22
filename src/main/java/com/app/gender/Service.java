@@ -9,26 +9,26 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class Service {
 
-    private static final String URL = "http://localhost:8080/api/gender";
+    private static final String URL = "http://localhost:8080/api/";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
     public String detect(String name) {
         LOGGER.info("detecting gender..");
         WebClient.RequestHeadersSpec<?> spec = WebClient.create().
-                get().uri(URL + "/" + name);
+                get().uri(URL + "gender/" + name);
         String designation = spec.retrieve().
-                toEntity(Gender.class).block().getBody().getDesignation();
+                toEntity(String.class).block().getBody();
         LOGGER.info("..Received item: ", designation);
         return designation;
     }
 
-    public List<String> listTokens(String gender) {
+    public List<TokenDto> listTokens(String gender) {
         LOGGER.info("fetching " + gender + " tokens..");
         WebClient.RequestHeadersSpec<?> spec = WebClient.create().
-                get().uri(URL + "/tokens/" + gender);
-        List<String> tokens = spec.retrieve().
-                toEntityList(String.class).block().getBody();
+                get().uri(URL + "tokens/" + gender);
+        List<TokenDto> tokens = spec.retrieve().
+                toEntityList(TokenDto.class).block().getBody();
         LOGGER.info("..received {} items.", tokens.size());
         return tokens;
 

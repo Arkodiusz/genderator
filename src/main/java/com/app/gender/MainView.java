@@ -17,7 +17,7 @@ import com.vaadin.flow.server.PWA;
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
 
-    private Grid<String> tokensGrid = new Grid<>();
+    private Grid<TokenDto> tokensGrid = new Grid<>();
 
     public MainView() {
         // Use TextField for standard text input
@@ -41,7 +41,10 @@ public class MainView extends VerticalLayout {
                     tokensGrid.setItems(service.listTokens("female"));
                 });
 
-        tokensGrid.addColumn(String::valueOf).setHeader("NAME");
+        tokensGrid.addColumn(TokenDto::getId).setHeader("ID");
+        tokensGrid.addColumn(TokenDto::getName).setHeader("NAME");
+        tokensGrid.addColumn(TokenDto::getGender).setHeader("GENDER");
+        tokensGrid.addColumn(TokenDto::getNation).setHeader("NATION");
 
 //        Button buttonFemaleTokens = new Button("FEMALE TOKENS",
 //                e -> Notification.listFemaleTokens("FEMALE");
