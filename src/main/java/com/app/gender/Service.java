@@ -56,7 +56,7 @@ public class Service {
         LOGGER.info("saving new token..");
         String jsonInputString = "{\"id\": \"" + tokenDto.getId() + "\", \"name\": \"" + tokenDto.getName() + "\", \"gender\": \"" + tokenDto.getGender() + "\"}";
         LOGGER.info(jsonInputString);
-        call(URL + "/tokens", jsonInputString, "POST");
+        call(URL + "tokens", jsonInputString, "POST");
         LOGGER.info("..token saved.");
     }
 
@@ -65,7 +65,7 @@ public class Service {
         LOGGER.info("deleting token..");
         RestTemplate rest = new RestTemplate();
         rest.exchange(
-                String.format(URL + "/tokens/" + id),
+                String.format(URL + "tokens/" + id),
                 HttpMethod.DELETE,
                 HttpEntity.EMPTY,
                 String.class);
@@ -76,7 +76,7 @@ public class Service {
         LOGGER.info("saving new token..");
         String jsonInputString = "{\"id\": \"" + tokenDto.getId() + "\", \"name\": \"" + tokenDto.getName() + "\", \"gender\": \"" + tokenDto.getGender() + "\"}";
         LOGGER.info(jsonInputString);
-        call(URL + "/tokens", jsonInputString, "PUT");
+        call(URL + "tokens", jsonInputString, "PUT");
         LOGGER.info("..token saved.");
     }
 

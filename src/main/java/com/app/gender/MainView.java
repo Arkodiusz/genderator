@@ -1,9 +1,7 @@
 package com.app.gender;
 
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -11,75 +9,87 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
 
-
 @Route("")
 @PWA(name = "GenderDetector GUI", shortName = "Genderator")
-@CssImport("./styles/shared-styles.css")
-//@CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
+
+    private boolean maleOnGrid;
 
     public MainView() {
 
         Service service = new Service();
 
-        VerticalLayout top = new VerticalLayout();
+        VerticalLayout layTop = new VerticalLayout();
 
         Text title = new Text("GENDER DETECTOR");
-        Text version = new Text("V0.1");
+        Text version = new Text("\nV0.1");
 
-        top.setAlignItems(Alignment.CENTER);
-        top.add(title, version);
+        layTop.add(title, version);
 
 
-        HorizontalLayout mid = new HorizontalLayout();
+        HorizontalLayout layMid = new HorizontalLayout();
 
-        TextField nameTextField = new TextField();
-        nameTextField.setPlaceholder("NAME");
+        TextField tfName = new TextField();
+        tfName.setPlaceholder("NAME");
         Text response = new Text("");
 
-        Button detectButton = new Button("DETECT",
-                e -> response.setText(service.detect(nameTextField.getValue())));
-        detectButton.addClickShortcut(Key.ENTER);
+        Button buttonDetect = new Button("DETECT",
+                e -> response.setText(".\n       " + service.detect(tfName.getValue())));
 
-        mid.setAlignItems(Alignment.CENTER);
-        mid.add(nameTextField, detectButton, response);
+        layMid.add(tfName, buttonDetect, response);
 
 
-        VerticalLayout bottom = new VerticalLayout();
-        HorizontalLayout bottom_top= new HorizontalLayout();
-        VerticalLayout bottom_bottom= new VerticalLayout();
+        VerticalLayout layBottom = new VerticalLayout();
+        HorizontalLayout layBottomTop= new HorizontalLayout();
+        VerticalLayout layBottomBottom= new VerticalLayout();
 
-        TokenForm tokenForm = new TokenForm(this);
+        TokenForm formToken = new TokenForm(this);
+        formToken.setVisible(false);
 
-        Grid<TokenDto> tokensGrid = new Grid<>();
-        tokensGrid.addColumn(TokenDto::getId).setHeader("ID");
-        tokensGrid.addColumn(TokenDto::getName).setHeader("NAME");
-        tokensGrid.addColumn(TokenDto::getGender).setHeader("GENDER");
+        Grid<TokenDto> gridTokens = new Grid<>();
+        gridTokens.addColumn(TokenDto::getId).setHeader("ID");
+        gridTokens.addColumn(TokenDto::getName).setHeader("NAME");
+        gridTokens.addColumn(TokenDto::getGender).setHeader("GENDER");
 
-        tokensGrid.asSingleSelect().addValueChangeListener(e -> tokenForm.setContent(tokensGrid.asSingleSelect().getValue(), "update"));
+        gridTokens.asSingleSelect().addValueChangeListener(e -> formToken.setContent(gridTokens.asSingleSelect().getValue(), "update"));
 
         Button buttonMaleTokens = new Button("MALE TOKENS",
                 e -> {
-            tokensGrid.asSingleSelect().clear();
-            tokensGrid.setItems(service.listTokens("male"));
+            gridTokens.asSingleSelect().clear();
+            gridTokens.setItems(service.listTokens("male"));
+            formToken.setContent(null, "");
+            setMaleOnGrid(true);
         });
         Button buttonFemaleTokens = new Button("FEMALE TOKENS",
                 e -> {
-            tokensGrid.asSingleSelect().clear();
-            tokensGrid.setItems(service.listTokens("female"));
+            gridTokens.asSingleSelect().clear();
+            gridTokens.setItems(service.listTokens("female"));
+            formToken.setContent(null, "");
+            setMaleOnGrid(false);
         });
         Button buttonAddToken = new Button("ADD TOKEN",
                 e -> {
-            tokensGrid.asSingleSelect().clear();
-            tokenForm.setContent(new TokenDto(), "create");
+            if (formToken.isVisible() && formToken.isModeSave()) {
+                gridTokens.asSingleSelect().clear();
+                formToken.setContent(null, "");
+            } else {
+                gridTokens.asSingleSelect().clear();
+                formToken.setContent(new TokenDto(), "create");
+            }
         });
 
+        layBottomTop.add(buttonMaleTokens, buttonFemaleTokens, buttonAddToken);
+        layBottomBottom.add(gridTokens, formToken);
+        layBottom.add(layBottomTop, layBottomBottom);
 
-        bottom_top.add(buttonMaleTokens, buttonFemaleTokens, buttonAddToken);
-        bottom_bottom.add(tokensGrid, tokenForm);
-        bottom.add(bottom_top, bottom_bottom);
+        add(layTop, layMid, layBottom);
+    }
 
-        add(top, mid, bottom);
+    private void setMaleOnGrid(boolean bool) {
+        maleOnGrid = bool;
+    }
+
+    public boolean isMaleOnGrid() {
+        return maleOnGrid;
     }
 }
-

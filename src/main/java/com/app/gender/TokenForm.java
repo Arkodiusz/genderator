@@ -2,6 +2,7 @@ package com.app.gender;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -16,10 +17,11 @@ public class TokenForm extends VerticalLayout {
 
     private MainView mainView;
 
-    private Text title = new Text("CREATE NEW ROCK");
+    private Text title = new Text("CREATE NEW TOKEN");
 
     private TextField name = new TextField("Name");
-    private TextField gender = new TextField("Gender");
+    private ComboBox<String> genderBox = new ComboBox("Gender");
+    private TextField gender = new TextField("");
 
     private Button save = new Button("Save");
 
@@ -46,16 +48,17 @@ public class TokenForm extends VerticalLayout {
             }
         });
 
-        delete.addClickListener(event -> {
-            delete();
-        });
+        delete.addClickListener(event -> delete());
 
-        add(title, name, gender, save, update, delete);
+        genderBox.setItems("f", "m");
+
+        add(title, name, genderBox, save, update, delete);
 
         binder.bindInstanceFields(this);
     }
 
     private void save() throws IOException {
+        gender.setValue(genderBox.getValue());
         service.save(binder.getBean());
         setContent(null, "");
     }
@@ -66,16 +69,20 @@ public class TokenForm extends VerticalLayout {
     }
 
     private void update() throws IOException {
+        gender.setValue(genderBox.getValue());
         service.update(binder.getBean());
         setContent(null, "");
     }
 
     public void setContent(TokenDto content, String mode) {
+        if (genderBox.getValue() != null) gender.setValue(genderBox.getValue());
         binder.setBean(content);
 
         if (content != null) {
             switch(mode) {
                 case "create":
+                    gender.setValue(mainView.isMaleOnGrid() ? "m" : "f");
+                    genderBox.setValue(gender.getValue());
                     title.setText("CREATE NEW TOKEN");
                     update.setVisible(false);
                     delete.setVisible(false);
@@ -84,6 +91,7 @@ public class TokenForm extends VerticalLayout {
                     name.focus();
                     return;
                 case "update":
+                    genderBox.setValue(gender.getValue());
                     title.setText("EDIT TOKEN");
                     save.setVisible(false);
                     update.setVisible(true);
@@ -94,5 +102,9 @@ public class TokenForm extends VerticalLayout {
             }
         }
         setVisible(false);
+    }
+
+    public boolean isModeSave() {
+        return save.isVisible();
     }
 }
