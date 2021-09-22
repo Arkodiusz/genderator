@@ -61,17 +61,20 @@ public class TokenForm extends VerticalLayout {
         gender.setValue(genderBox.getValue());
         service.save(binder.getBean());
         setContent(null, "");
+        mainView.refresh();
     }
 
     private void delete() {
         service.delete(binder.getBean().getId());
         setContent(null, "");
+        mainView.refresh();
     }
 
     private void update() throws IOException {
         gender.setValue(genderBox.getValue());
         service.update(binder.getBean());
         setContent(null, "");
+        mainView.refresh();
     }
 
     public void setContent(TokenDto content, String mode) {

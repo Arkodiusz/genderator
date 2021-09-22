@@ -15,12 +15,12 @@ import com.vaadin.flow.server.PWA;
 @PWA(name = "GenderDetector GUI", shortName = "Genderator")
 public class MainView extends VerticalLayout {
 
+    private Grid<TokenDto> gridTokens = new Grid<>();
     private boolean maleOnGrid;
+    private Service service = new Service();
+    TokenForm formToken = new TokenForm(this);
 
     public MainView() {
-
-        Service service = new Service();
-
         VerticalLayout layTop = new VerticalLayout();
         Text title = new Text("GENDER DETECTOR");
         Text version = new Text("\nv0.2");
@@ -53,27 +53,17 @@ public class MainView extends VerticalLayout {
         VerticalLayout layBottom = new VerticalLayout();
         HorizontalLayout layBottomTop= new HorizontalLayout();
         VerticalLayout layBottomBottom= new VerticalLayout();
-        TokenForm formToken = new TokenForm(this);
+
         formToken.setVisible(false);
-        Grid<TokenDto> gridTokens = new Grid<>();
+
         gridTokens.addColumn(TokenDto::getId).setHeader("ID");
         gridTokens.addColumn(TokenDto::getName).setHeader("NAME");
         gridTokens.addColumn(TokenDto::getGender).setHeader("GENDER");
         gridTokens.asSingleSelect().addValueChangeListener(e -> formToken.setContent(gridTokens.asSingleSelect().getValue(), "update"));
         Button buttonMaleTokens = new Button("MALE TOKENS",
-                e -> {
-            gridTokens.asSingleSelect().clear();
-            gridTokens.setItems(service.listTokens("male"));
-            formToken.setContent(null, "");
-            setMaleOnGrid(true);
-        });
+                e -> showMaleTokens());
         Button buttonFemaleTokens = new Button("FEMALE TOKENS",
-                e -> {
-            gridTokens.asSingleSelect().clear();
-            gridTokens.setItems(service.listTokens("female"));
-            formToken.setContent(null, "");
-            setMaleOnGrid(false);
-        });
+                e -> showFemaleTokens());
         Button buttonAddToken = new Button("ADD TOKEN",
                 e -> {
             if (formToken.isVisible() && formToken.isModeSave()) {
@@ -98,4 +88,26 @@ public class MainView extends VerticalLayout {
     public boolean isMaleOnGrid() {
         return maleOnGrid;
     }
+
+    public void refresh() {
+        if (isMaleOnGrid()) {
+            showMaleTokens();
+        } else {
+            showFemaleTokens();
+        }
+    }
+
+    private void showMaleTokens() {
+        gridTokens.asSingleSelect().clear();
+        gridTokens.setItems(service.listTokens("male"));
+        formToken.setContent(null, "");
+        setMaleOnGrid(true);
+    }
+    private void showFemaleTokens() {
+        gridTokens.asSingleSelect().clear();
+        gridTokens.setItems(service.listTokens("female"));
+        formToken.setContent(null, "");
+        setMaleOnGrid(false);
+    }
+
 }
