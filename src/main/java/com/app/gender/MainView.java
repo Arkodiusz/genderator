@@ -3,19 +3,28 @@ package com.app.gender;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Route("")
 @PWA(name = "GenderDetector GUI", shortName = "Genderator")
 public class MainView extends VerticalLayout {
 
     private Grid<TokenDto> gridTokens = new Grid<>();
+
+    private List<TokenDto> listTokens = new ArrayList<>();
+    TextField filterNameField = new TextField();
+
     private boolean maleOnGrid;
     private Service service = new Service();
     TokenForm formToken = new TokenForm(this);
@@ -23,7 +32,7 @@ public class MainView extends VerticalLayout {
     public MainView() {
         VerticalLayout layTop = new VerticalLayout();
         Text title = new Text("GENDER DETECTOR");
-        Text version = new Text("\nv0.2");
+        Text version = new Text("\nv0.3");
         layTop.add(title, version);
 
         HorizontalLayout layMid = new HorizontalLayout();
@@ -56,10 +65,26 @@ public class MainView extends VerticalLayout {
 
         formToken.setVisible(false);
 
-        gridTokens.addColumn(TokenDto::getId).setHeader("ID");
-        gridTokens.addColumn(TokenDto::getName).setHeader("NAME");
-        gridTokens.addColumn(TokenDto::getGender).setHeader("GENDER");
+        Grid.Column<TokenDto> nameColumn = gridTokens
+                .addColumn(TokenDto::getName).setHeader("NAME");
+        Grid.Column<TokenDto> genderColumn = gridTokens
+                .addColumn(TokenDto::getGender).setHeader("GENDER");
+
         gridTokens.asSingleSelect().addValueChangeListener(e -> formToken.setContent(gridTokens.asSingleSelect().getValue(), "update"));
+
+        HeaderRow filterRow = gridTokens.appendHeaderRow();
+
+        filterNameField.setValueChangeMode(ValueChangeMode.EAGER);
+        filterNameField.setSizeFull();
+        filterNameField.setPlaceholder("...");
+        filterNameField.getElement().setAttribute("focus-target", "");
+        filterNameField.addValueChangeListener(event -> {
+            gridTokens.setItems(listTokens.stream()
+                    .filter(t -> (t.getName().toUpperCase().contains(filterNameField.getValue().toUpperCase()) || filterNameField.getValue().isEmpty())));
+        });
+
+        filterRow.getCell(nameColumn).setComponent(filterNameField);
+
         Button buttonMaleTokens = new Button("MALE TOKENS",
                 e -> showMaleTokens());
         Button buttonFemaleTokens = new Button("FEMALE TOKENS",
@@ -99,15 +124,18 @@ public class MainView extends VerticalLayout {
 
     private void showMaleTokens() {
         gridTokens.asSingleSelect().clear();
-        gridTokens.setItems(service.listTokens("male"));
+        listTokens = service.listTokens("male");
+        filterNameField.setValue("");
+        gridTokens.setItems(listTokens);
         formToken.setContent(null, "");
         setMaleOnGrid(true);
     }
     private void showFemaleTokens() {
         gridTokens.asSingleSelect().clear();
-        gridTokens.setItems(service.listTokens("female"));
+        listTokens = service.listTokens("female");
+        filterNameField.setValue("");
+        gridTokens.setItems(listTokens);
         formToken.setContent(null, "");
         setMaleOnGrid(false);
     }
-
 }

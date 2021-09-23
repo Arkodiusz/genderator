@@ -1,7 +1,7 @@
 package com.app.gender;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
@@ -55,7 +55,11 @@ public class Service {
 
     public void save(TokenDto tokenDto) throws IOException {
         LOGGER.info("saving new token..");
-        String jsonInputString = "{\"id\": \"" + tokenDto.getId() + "\", \"name\": \"" + tokenDto.getName() + "\", \"gender\": \"" + tokenDto.getGender() + "\"}";
+        String jsonInputString = "{" +
+                        "\"id\": \"" + tokenDto.getId() + "\", " +
+                        "\"name\": \"" + tokenDto.getName() + "\", " +
+                        "\"gender\": \"" + tokenDto.getGender() +
+                        "\"}";
         LOGGER.info(jsonInputString);
         call(URL + "tokens", jsonInputString, "POST");
         LOGGER.info("..token saved.");
@@ -74,7 +78,11 @@ public class Service {
 
     public void update(TokenDto tokenDto) throws IOException {
         LOGGER.info("saving new token..");
-        String jsonInputString = "{\"id\": \"" + tokenDto.getId() + "\", \"name\": \"" + tokenDto.getName() + "\", \"gender\": \"" + tokenDto.getGender() + "\"}";
+        String jsonInputString = "{" +
+                "\"id\": \"" + tokenDto.getId() + "\", " +
+                "\"name\": \"" + tokenDto.getName() + "\", " +
+                "\"gender\": \"" + tokenDto.getGender() +
+                "\"}";
         LOGGER.info(jsonInputString);
         call(URL + "tokens", jsonInputString, "PUT");
         LOGGER.info("..token saved.");
